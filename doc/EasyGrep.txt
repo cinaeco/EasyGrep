@@ -283,6 +283,7 @@ o |EasyGrepCommand|                     - Whether to use vimgrep or grepprg
 o |EasyGrepRecursive|                   - Recursive searching
 o |EasyGrepIgnoreCase|                  - Case-sensitivity in searches
 o |EasyGrepHidden|                      - Include hidden files in searches
+o |EasyGrepHighlightQfMatches|          - Highlight matches in the quickfix window
 o |EasyGrepFilesToExclude|              - Comma-separated list of files patterns
                                         that will be excluded from the search
 o |EasyGrepAllOptionsInExplorer|        - How many options to show in the explorer
@@ -378,6 +379,11 @@ overrided for vimgrep searches with \c and \C.
 Specifies that hidden files search be activated on start.  Note that hidden
 implies the unix meaning of those files that are prepended with a '.', and not
 the Windows meaning of those files with a hidden attribute.
+
+*EasyGrepHighlightQfMatches* [default=0]
+Specifies that matched words in the QuickFix window should be distinguished
+from the rest of the line.
+Use the *EasyGrepQfMatchHighlight* |highlight| group to customize colours.
 
 *EasyGrepFilesToExclude*  [default=""]
 Specifies a list of file patterns that will be excluded from the search.

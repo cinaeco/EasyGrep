@@ -740,6 +740,7 @@ function! <sid>EchoOptionsSet()
             \ "g:EasyGrepSearchCurrentBufferDir",
             \ "g:EasyGrepIgnoreCase",
             \ "g:EasyGrepHidden",
+            \ "g:EasyGrepHighlightQfMatches",
             \ "g:EasyGrepFilesToExclude",
             \ "g:EasyGrepAllOptionsInExplorer",
             \ "g:EasyGrepWindow",
@@ -1032,6 +1033,13 @@ function! <sid>ToggleHidden()
     call s:Echo("Set hidden files included to (".s:OnOrOff(g:EasyGrepHidden).")")
 endfunction
 " }}}
+" ToggleHighlightQfMatches {{{
+function! <sid>ToggleHighlightQfMatches()
+    let g:EasyGrepHighlightQfMatches = !g:EasyGrepHighlightQfMatches
+    call s:RefreshAllOptions()
+    call s:Echo("Set highlight matches in quickfix (".s:OnOrOff(g:EasyGrepHighlightQfMatches).")")
+endfunction
+" }}}
 " ToggleBufferDirectories {{{
 function! <sid>ToggleBufferDirectories()
     let g:EasyGrepSearchCurrentBufferDir = !g:EasyGrepSearchCurrentBufferDir
@@ -1274,6 +1282,7 @@ function! s:CreateOptionMappings()
     exe "nmap <silent> ".p."d  :call <sid>ToggleBufferDirectories()<cr>"
     exe "nmap <silent> ".p."i  :call <sid>ToggleIgnoreCase()<cr>"
     exe "nmap <silent> ".p."h  :call <sid>ToggleHidden()<cr>"
+    exe "nmap <silent> ".p."f  :call <sid>ToggleHighlightQfMatches()<cr>"
     exe "nmap <silent> ".p."w  :call <sid>ToggleWindow()<cr>"
     exe "nmap <silent> ".p."o  :call <sid>ToggleOpenWindow()<cr>"
     exe "nmap <silent> ".p."g  :call <sid>ToggleEveryMatch()<cr>"
@@ -1313,6 +1322,7 @@ function! s:CreateOptionsString()
         call add(s:Options, "\"w: window to use (".s:GetErrorListName().")")
         call add(s:Options, "\"m: replace window mode (".s:GetReplaceWindowModeString(g:EasyGrepReplaceWindowMode).")")
         call add(s:Options, "\"o: open window on match (".s:OnOrOff(g:EasyGrepOpenWindowOnMatch).")")
+        call add(s:Options, "\"f: highlight matches in quickfix (".s:OnOrOff(g:EasyGrepHighlightQfMatches).")")
         call add(s:Options, "\"g: separate multiple matches (".s:OnOrOff(g:EasyGrepEveryMatch).")")
         call add(s:Options, "\"p: jump to match (".s:OnOrOff(g:EasyGrepJumpToMatch).")")
         call add(s:Options, "\"!: invert the meaning of whole word (".s:OnOrOff(g:EasyGrepInvertWholeWord).")")
@@ -1350,6 +1360,7 @@ function! s:MapOptionsKeys()
     nnoremap <buffer> <silent> d    :call <sid>ToggleBufferDirectories()<cr>
     nnoremap <buffer> <silent> i    :call <sid>ToggleIgnoreCase()<cr>
     nnoremap <buffer> <silent> h    :call <sid>ToggleHidden()<cr>
+    nnoremap <buffer> <silent> f    :call <sid>ToggleHighlightQfMatches()<cr>
     nnoremap <buffer> <silent> e    :call <sid>EchoFilesSearched()<cr>
 
     nnoremap <buffer> <silent> x    :call <sid>SetFilesToExclude()<cr>
@@ -2365,6 +2376,10 @@ function! s:DoGrep(word, add, whole, count, escapeArgs)
             endif
             setlocal nofoldenable
         endif
+        if g:EasyGrepHighlightQfMatches == 1
+          execute 'match EasyGrepQfMatchHighlight /\c' . a:word . '/'
+          redraw!
+        endif
     else
         call s:WarnNoMatches(a:word)
         return 0
@@ -3068,6 +3083,14 @@ endif
 
 if !exists("g:EasyGrepHidden")
     let g:EasyGrepHidden=0
+endif
+
+if !exists("g:EasyGrepHighlightQfMatches")
+    let g:EasyGrepHighlightQfMatches=0
+endif
+
+if !hlexists("EasyGrepQfMatchHighlight")
+    highlight EasyGrepQfMatchHighlight cterm=reverse gui=reverse ctermfg=4 guifg=4
 endif
 
 if !exists("g:EasyGrepAllOptionsInExplorer")
