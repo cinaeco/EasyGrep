@@ -2189,7 +2189,7 @@ function! s:GetGrepCommandLine(word, add, whole, count, escapeArgs)
             let s2 .= "g"
         endif
 
-        if g:EasyGrepJumpToMatch
+        if !g:EasyGrepJumpToMatch
             let s2 .= "j"
         endif
     endif
